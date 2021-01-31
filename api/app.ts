@@ -1,23 +1,39 @@
-import {ApolloServer} from "apollo-server";
-import {makeSchema} from "nexus";
-import {join} from "path";
-import * as types from './graphql'
-import { context } from './context'
+import express from "express";
+import { ApolloServer } from "apollo-server-express";
+import { makeSchema } from "nexus";
+import { join } from "path";
+import * as types from "./graphql";
+import { context } from "./context";
+
+import session from "client-sessions";
 
 const schema = makeSchema({
-    types,
-    outputs: {
-        typegen: join(__dirname, '..', 'nexus-typegen.ts'),
-        schema: join(__dirname, '...', 'schema.graphql'),
-    },
-    contextType: {
-        module: join(__dirname, "./context.ts"),
-        export: "Context"
-      }
-})
+  types,
+  outputs: {
+    typegen: join(__dirname, "..", "nexus-typegen.ts"),
+    schema: join(__dirname, "...", "schema.graphql"),
+  },
+  contextType: {
+    module: join(__dirname, "./context.ts"),
+    export: "Context",
+  },
+});
 
-const server = new ApolloServer({schema, context})
+const server = new ApolloServer({ schema, context });
 
-server.listen().then(({ url }) => {
-    console.log(`🚀 Server ready at ${url}`)
-})
+const app = express();
+
+// Set a Session Cookie
+app.use(
+  session({
+    cookieName: "session",
+    secret: "cat",
+    duration: 24 * 60 * 60 * 1000, // 1 Day
+  })
+);
+
+server.applyMiddleware({ app, path: "/" });
+
+app.listen(4000, () => {
+  console.log(`🚀 Server ready at 4000`);
+});

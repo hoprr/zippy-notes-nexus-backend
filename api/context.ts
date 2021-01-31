@@ -1,10 +1,11 @@
-import { db } from './db'
-import { PrismaClient } from "@prisma/client"
+import { db } from "./db";
+import { PrismaClient } from "@prisma/client";
+import { Request } from "express";
 
 export interface Context {
-    db: PrismaClient
-  }
+  db: PrismaClient;
+}
 
-export const context = {
-    db
-  }
+export const context = (req: Request) => {
+  return { ...req, db };
+};
