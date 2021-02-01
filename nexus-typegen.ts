@@ -28,6 +28,10 @@ export interface NexusGenScalars {
 }
 
 export interface NexusGenObjects {
+  AuthPayload: { // root type
+    githubToken?: string | null; // String
+    user?: NexusGenRootTypes['User'] | null; // User
+  }
   Mutation: {};
   Post: { // root type
     body?: string | null; // String
@@ -39,6 +43,9 @@ export interface NexusGenObjects {
     email?: string | null; // String
     id?: string | null; // String
     name?: string | null; // String
+  }
+  githubLoginUrl: { // root type
+    githubLoginUrl?: string | null; // String
   }
 }
 
@@ -53,7 +60,12 @@ export type NexusGenRootTypes = NexusGenObjects
 export type NexusGenAllTypes = NexusGenRootTypes & NexusGenScalars
 
 export interface NexusGenFieldTypes {
+  AuthPayload: { // field return type
+    githubToken: string | null; // String
+    user: NexusGenRootTypes['User'] | null; // User
+  }
   Mutation: { // field return type
+    AuthorizeWithGithub: NexusGenRootTypes['AuthPayload'] | null; // AuthPayload
     createPost: NexusGenRootTypes['Post']; // Post!
     createUser: NexusGenRootTypes['User']; // User!
   }
@@ -64,6 +76,7 @@ export interface NexusGenFieldTypes {
     title: string | null; // String
   }
   Query: { // field return type
+    githubLoginUrl: string | null; // String
     posts: Array<NexusGenRootTypes['Post'] | null>; // [Post]!
     users: Array<NexusGenRootTypes['User'] | null>; // [User]!
   }
@@ -73,10 +86,18 @@ export interface NexusGenFieldTypes {
     name: string | null; // String
     posts: Array<NexusGenRootTypes['Post'] | null> | null; // [Post]
   }
+  githubLoginUrl: { // field return type
+    githubLoginUrl: string | null; // String
+  }
 }
 
 export interface NexusGenFieldTypeNames {
+  AuthPayload: { // field return type name
+    githubToken: 'String'
+    user: 'User'
+  }
   Mutation: { // field return type name
+    AuthorizeWithGithub: 'AuthPayload'
     createPost: 'Post'
     createUser: 'User'
   }
@@ -87,6 +108,7 @@ export interface NexusGenFieldTypeNames {
     title: 'String'
   }
   Query: { // field return type name
+    githubLoginUrl: 'String'
     posts: 'Post'
     users: 'User'
   }
@@ -96,10 +118,16 @@ export interface NexusGenFieldTypeNames {
     name: 'String'
     posts: 'Post'
   }
+  githubLoginUrl: { // field return type name
+    githubLoginUrl: 'String'
+  }
 }
 
 export interface NexusGenArgTypes {
   Mutation: {
+    AuthorizeWithGithub: { // args
+      code: string; // String!
+    }
     createPost: { // args
       authorId: string; // String!
       body: string; // String!

@@ -1,11 +1,14 @@
 import express from "express";
 import { ApolloServer } from "apollo-server-express";
 import { makeSchema } from "nexus";
+import * as dotenv from "dotenv";
 import { join } from "path";
+import session from "client-sessions";
+
 import * as types from "./graphql";
 import { context } from "./context";
 
-import session from "client-sessions";
+dotenv.config();
 
 const schema = makeSchema({
   types,
