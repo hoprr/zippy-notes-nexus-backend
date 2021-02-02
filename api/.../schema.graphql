@@ -3,14 +3,13 @@
 
 
 type AuthPayload {
-  githubToken: String
   user: User
+  userId: String
 }
 
 type Mutation {
   AuthorizeWithGithub(code: String!): AuthPayload
-  createPost(authorId: String!, body: String!, id: String!, title: String!): Post!
-  createUser(email: String!, id: String!, name: String!): User!
+  createPost(authorId: String!, body: String!, id: String, title: String!): Post!
 }
 
 type Post {

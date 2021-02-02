@@ -1,4 +1,4 @@
-import { extendType, nonNull, objectType, stringArg } from "nexus";
+import { extendType, objectType } from "nexus";
 import { Post } from "./Post";
 
 export const User = objectType({
@@ -25,29 +25,6 @@ export const UserQuery = extendType({
       type: "User",
       resolve(_parent, _args, ctx) {
         return ctx.db.user.findMany();
-      },
-    });
-  },
-});
-
-export const UserMutation = extendType({
-  type: "Mutation",
-  definition(t) {
-    t.nonNull.field("createUser", {
-      type: "User",
-      args: {
-        id: nonNull(stringArg()),
-        name: nonNull(stringArg()),
-        email: nonNull(stringArg()),
-      },
-      resolve(_parent, args, ctx) {
-        const user = {
-          id: args.id,
-          name: args.name,
-          email: args.email,
-        };
-
-        return ctx.db.user.create({ data: user });
       },
     });
   },

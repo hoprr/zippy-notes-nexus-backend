@@ -19,11 +19,10 @@ export const githubLoginUrlQuery = extendType({
     });
   },
 });
-
 export const AuthPayload = objectType({
   name: "AuthPayload",
   definition(t) {
-    t.string("githubToken"),
+    t.string("userId"),
       t.field("user", {
         type: "User",
       });
@@ -38,7 +37,7 @@ export const authorizeWithGithub = extendType({
       args: {
         code: nonNull(stringArg()),
       },
-      async resolve(_parent, args) {
+      async resolve(_parent, args, context) {
         // 1. Obtain data from GitHub
         let githubUser = await requestGithubUser({
           client_id: process.env.GITHUB_CLIENT_ID,
@@ -46,16 +45,45 @@ export const authorizeWithGithub = extendType({
           code: args.code,
         });
 
-        const { name, login, avatar, email } = githubUser;
+        // Get useful info from the API
+        const { id, name, avatar_url, email } = githubUser;
 
-        const user = {
-          name,
-          login,
-          avatar,
-          email,
-        };
+        // Verify is the user exists
+        const user = await context.db.user.findUnique({
+          where: {
+            id: `${id}`,
+          },
+        });
 
-        return { user };
+        /**
+         *
+         * SIGN UP AND SIGN IN PROCESS
+         *
+         */
+
+        if (!Boolean(user)) {
+          /* The User Does Not Exist */
+          /* Sign Up */
+          const newGithubUser = {
+            id: `${id}`,
+            name: name,
+            avatar: avatar_url,
+            email: email,
+          };
+
+          // Add the User to the Database
+          const newUser = await context.db.user.create({ data: newGithubUser });
+
+          // Set the userId in cookie for Auth
+          context.req.userSession.userId = id;
+
+          return { userId: newUser.id, user: newUser };
+        } else {
+          /* Sign In the User */
+          context.req.userSession.userId = id;
+
+          return { userId: user!.id, user: user };
+        }
       },
     });
   },

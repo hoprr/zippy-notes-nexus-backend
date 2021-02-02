@@ -24,7 +24,13 @@ export const PostQuery = extendType({
     t.nonNull.list.field("posts", {
       type: "Post",
       resolve(_parent, _args, ctx) {
-        return ctx.db.post.findMany();
+        if (ctx.userId !== undefined) {
+          return ctx.db.post.findMany({
+            where: { id: ctx.userId },
+          });
+        } else {
+          throw new Error("User now authenticated.");
+        }
       },
     });
   },
@@ -36,20 +42,24 @@ export const PostMutation = extendType({
     t.nonNull.field("createPost", {
       type: "Post",
       args: {
-        id: nonNull(stringArg()),
+        id: stringArg(),
         title: nonNull(stringArg()),
         body: nonNull(stringArg()),
         authorId: nonNull(stringArg()),
       },
       resolve(_parent, args, ctx) {
-        const draft = {
-          id: args.id,
-          title: args.title,
-          body: args.body,
-          author: { connect: { id: args.authorId } },
-        };
+        if (ctx.userId !== undefined) {
+          const draft = {
+            id: `${ctx.userId}`,
+            title: args.title,
+            body: args.body,
+            author: { connect: { id: args.authorId } },
+          };
 
-        return ctx.db.post.create({ data: draft });
+          return ctx.db.post.create({ data: draft });
+        } else {
+          throw new Error("User not authenticated.");
+        }
       },
     });
   },

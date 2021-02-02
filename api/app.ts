@@ -22,20 +22,28 @@ const schema = makeSchema({
   },
 });
 
-const server = new ApolloServer({ schema, context });
-
 const app = express();
 
 // Set a Session Cookie
+// Can be accessed by req.session.userId
+// @TODO Make Secret Stronger
+// @TODO Set secure: true when in prod OR set up proxy
 app.use(
   session({
-    cookieName: "session",
+    cookieName: "userSession",
     secret: "cat",
-    duration: 24 * 60 * 60 * 1000, // 1 Day
+    duration: 28 * 24 * 60 * 60 * 1000, // 28 Days
+    cookie: {
+      httpOnly: true,
+      maxAge: 14 * 24 * 60 * 60 * 1000, // 14 Days
+      // secure: true,
+    },
   })
 );
 
-server.applyMiddleware({ app, path: "/" });
+const server = new ApolloServer({ schema, context });
+
+server.applyMiddleware({ app, path: "/", cors: false });
 
 app.listen(4000, () => {
   console.log(`🚀 Server ready at 4000`);

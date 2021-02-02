@@ -29,8 +29,8 @@ export interface NexusGenScalars {
 
 export interface NexusGenObjects {
   AuthPayload: { // root type
-    githubToken?: string | null; // String
     user?: NexusGenRootTypes['User'] | null; // User
+    userId?: string | null; // String
   }
   Mutation: {};
   Post: { // root type
@@ -61,13 +61,12 @@ export type NexusGenAllTypes = NexusGenRootTypes & NexusGenScalars
 
 export interface NexusGenFieldTypes {
   AuthPayload: { // field return type
-    githubToken: string | null; // String
     user: NexusGenRootTypes['User'] | null; // User
+    userId: string | null; // String
   }
   Mutation: { // field return type
     AuthorizeWithGithub: NexusGenRootTypes['AuthPayload'] | null; // AuthPayload
     createPost: NexusGenRootTypes['Post']; // Post!
-    createUser: NexusGenRootTypes['User']; // User!
   }
   Post: { // field return type
     author: NexusGenRootTypes['User'] | null; // User
@@ -93,13 +92,12 @@ export interface NexusGenFieldTypes {
 
 export interface NexusGenFieldTypeNames {
   AuthPayload: { // field return type name
-    githubToken: 'String'
     user: 'User'
+    userId: 'String'
   }
   Mutation: { // field return type name
     AuthorizeWithGithub: 'AuthPayload'
     createPost: 'Post'
-    createUser: 'User'
   }
   Post: { // field return type name
     author: 'User'
@@ -131,13 +129,8 @@ export interface NexusGenArgTypes {
     createPost: { // args
       authorId: string; // String!
       body: string; // String!
-      id: string; // String!
+      id?: string | null; // String
       title: string; // String!
-    }
-    createUser: { // args
-      email: string; // String!
-      id: string; // String!
-      name: string; // String!
     }
   }
 }
